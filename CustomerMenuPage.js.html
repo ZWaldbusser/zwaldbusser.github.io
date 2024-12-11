@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: CustomerMenuPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CustomerMenuPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// import React from 'react';
+// import './CustomerMenuPage.css';
+// import Header from '../components/Header';
+// import bowlImage from '../assets/bowl.jpg';
+// import plateImage from '../assets/plate.jpg';
+// import biggerPlateImage from '../assets/bigplate.jpg';
+
+// function CustomerMenuPage() {
+//     return (
+//     &lt;div>
+//         &lt;Header />
+//         &lt;div className="menu-container">
+//             &lt;main className="main-content">
+//                 &lt;h2 className="tagline">WE WOK FOR YOU&lt;/h2>
+//                 &lt;p className="instruction">Choose meal type to get started&lt;/p>
+//                 &lt;div className="menu-options">
+//                     &lt;div className="menu-item">
+//                         &lt;img src={bowlImage} alt="Bowl" className="menu-image" />
+//                         &lt;p className="menu-description">Bowl: 1 side, 1 entree&lt;/p>
+//                     &lt;/div>
+//                     &lt;div className="menu-item">
+//                         &lt;img src={plateImage} alt="Plate" className="menu-image" />
+//                         &lt;p className="menu-description">Plate: 1 side, 2 entrees&lt;/p>
+//                     &lt;/div>
+//                     &lt;div className="menu-item">
+//                         &lt;img src={biggerPlateImage} alt="Bigger Plate" className="menu-image" />
+//                         &lt;p className="menu-description">Bigger Plate: 1 side, 3 entrees&lt;/p>
+//                     &lt;/div>
+//                 &lt;/div>
+//             &lt;/main>
+//         &lt;/div>
+//         &lt;/div>
+//     );
+// }
+
+// export default CustomerMenuPage;
+
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import './CustomerMenuPage.css';
+// import Header from '../components/Header';
+// import { useCart } from '../context/CartContext';
+// import { Link } from 'react-router-dom';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faUtensils, faCoffee, faHamburger, faSeedling, faPepperHot } from '@fortawesome/free-solid-svg-icons';
+
+// function MenuPage() {
+//   const [menuItems, setMenuItems] = useState([]);
+//   const [filteredItems, setFilteredItems] = useState([]);
+//   const [selectedTab, setSelectedTab] = useState('Side');
+//   const { cart, addToCart } = useCart();
+
+//   const fetchMenuItems = async () => {
+//     try {
+//       const response = await axios.post('http://localhost:5000/api/query', {
+//         query: 'SELECT * FROM menu_items',
+//       });
+//       setMenuItems(response.data);
+//       setFilteredItems(response.data.filter(item => item.category === 'Side')); 
+//     } catch (error) {
+//       console.error('Error fetching menu items:', error);
+//     }
+//   };
+
+//   const filterItemsByCategory = (category) => {
+//     setSelectedTab(category);
+//     setFilteredItems(menuItems.filter(item => item.category === category));
+//   };
+
+//   useEffect(() => {
+//     fetchMenuItems();
+//   }, []);
+
+//   const handleQuantityChange = (e) => {
+//     const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
+//     e.target.value = newQuantity;
+//   };
+
+//   const handleAddToCart = (item, quantity) => {
+//     addToCart(item, quantity);
+//   };
+
+//   return (
+//     &lt;div className="menu-page">
+//       &lt;Header />
+      
+//       {/* Tab navigation with icons */}
+//       &lt;div className="tabs">
+//         &lt;button className={`tab ${selectedTab === 'Side' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Side')}>
+//           &lt;FontAwesomeIcon icon={faSeedling} /> Sides
+//         &lt;/button>
+//         &lt;button className={`tab ${selectedTab === 'Entree' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Entree')}>
+//           &lt;FontAwesomeIcon icon={faHamburger} /> Entrees
+//         &lt;/button>
+//         &lt;button className={`tab ${selectedTab === 'Appetizer' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Appetizer')}>
+//           &lt;FontAwesomeIcon icon={faUtensils} /> Appetizers
+//         &lt;/button>
+//         &lt;button className={`tab ${selectedTab === 'Drink' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Drink')}>
+//           &lt;FontAwesomeIcon icon={faCoffee} /> Drinks
+//         &lt;/button>
+//         &lt;button className={`tab ${selectedTab === 'Sauces' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Sauces')}>
+//           &lt;FontAwesomeIcon icon={faPepperHot} /> Sauces
+//         &lt;/button>
+//       &lt;/div>
+
+//       {/* Display filtered menu items */}
+//       &lt;div className="menu-items-container">
+//         {filteredItems.map((item) => (
+//           &lt;div key={item.menu_item_id} className="menu-item">
+//             &lt;img src={item.image_url} alt={item.name} />
+//             &lt;h3>{item.name}&lt;/h3>
+//             &lt;p>{item.description}&lt;/p>
+//             &lt;div className="price">${item.price}&lt;/div>
+
+//             &lt;div className="quantity-container">
+//               &lt;button className="quantity-button" onClick={(e) => {
+//                 const input = e.target.nextElementSibling;
+//                 input.value = Math.max(1, (parseInt(input.value) || 1) - 1);
+//               }}>
+//                 -
+//               &lt;/button>
+//               &lt;input type="number" min="1" defaultValue="1" className="quantity-input" onChange={handleQuantityChange} id={`quantity-${item.menu_item_id}`} />
+//               &lt;button className="quantity-button" onClick={(e) => {
+//                 const input = e.target.previousElementSibling;
+//                 input.value = Math.max(1, (parseInt(input.value) || 1) + 1);
+//               }}>
+//                 +
+//               &lt;/button>
+//               &lt;button className="add-to-cart" onClick={() => handleAddToCart(item, parseInt(document.getElementById(`quantity-${item.menu_item_id}`).value))}>
+//                 Add to Cart
+//               &lt;/button>
+//             &lt;/div>
+//           &lt;/div>
+//         ))}
+//       &lt;/div>
+
+//       {/* Cart button */}
+//       &lt;Link to="/cart">
+//         &lt;button className="cart-button">🛒&lt;/button>
+//       &lt;/Link>
+//     &lt;/div>
+//   );
+// }
+
+// export default MenuPage;
+
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './CustomerMenuPage.css';
+import Header from '../components/Header';
+import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUtensils, faCoffee, faHamburger, faSeedling, faPepperHot } from '@fortawesome/free-solid-svg-icons';
+
+ /**
+ * Creates the Customer Menu Page
+ * @returns {HTML} Returns the HTML data of the page
+ */
+function MenuPage() {
+  const [menuItems, setMenuItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedTab, setSelectedTab] = useState('Side');
+  const { cart, addToCart } = useCart();
+
+  // Accessibility States
+  const [isTextEnlarged, setIsTextEnlarged] = useState(false);
+  const [isHighContrast, setIsHighContrast] = useState(false);
+
+  /**
+   * Fetches all menu items from our database
+   * @returns {N/A} Uses another function to manipulate data
+   */
+  const fetchMenuItems = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/query', {
+        query: 'SELECT * FROM menu_items',
+      });
+      setMenuItems(response.data);
+      setFilteredItems(response.data.filter(item => item.category === 'Side'));
+    } catch (error) {
+      console.error('Error fetching menu items:', error);
+    }
+  };
+
+  const filterItemsByCategory = (category) => {
+    setSelectedTab(category);
+    setFilteredItems(menuItems.filter(item => item.category === category));
+  };
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const handleQuantityChange = (e) => {
+    const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
+    e.target.value = newQuantity;
+  };
+
+  const handleAddToCart = (item, quantity) => {
+    addToCart(item, quantity);
+  };
+
+  // Accessibility Handlers
+  const toggleTextSize = () => {
+    setIsTextEnlarged(!isTextEnlarged);
+    const body = document.body;
+    if (!isTextEnlarged) {
+      body.classList.add('text-enlarged');
+    } else {
+      body.classList.remove('text-enlarged');
+    }
+  };
+
+  const toggleHighContrast = () => {
+    setIsHighContrast(!isHighContrast);
+    const body = document.body;
+    if (!isHighContrast) {
+      body.classList.add('high-contrast');
+    } else {
+      body.classList.remove('high-contrast');
+    }
+  };
+
+  return (
+    &lt;div className="menu-page">
+      &lt;Header />
+      
+      {/* Accessibility Button */}
+      &lt;div className="accessibility-widget">
+        &lt;button onClick={toggleTextSize}>
+          {isTextEnlarged ? 'Normal Text Size' : 'Enlarge Text'}
+        &lt;/button>
+        &lt;button onClick={toggleHighContrast}>
+          {isHighContrast ? 'Normal Contrast' : 'High Contrast'}
+        &lt;/button>
+      &lt;/div>
+
+      {/* Tab navigation with icons */}
+      &lt;div className="tabs">
+        &lt;button className={`tab ${selectedTab === 'Side' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Side')}>
+          &lt;FontAwesomeIcon icon={faSeedling} /> Sides
+        &lt;/button>
+        &lt;button className={`tab ${selectedTab === 'Entree' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Entree')}>
+          &lt;FontAwesomeIcon icon={faHamburger} /> Entrees
+        &lt;/button>
+        &lt;button className={`tab ${selectedTab === 'Appetizer' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Appetizer')}>
+          &lt;FontAwesomeIcon icon={faUtensils} /> Appetizers
+        &lt;/button>
+        &lt;button className={`tab ${selectedTab === 'Drink' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Drink')}>
+          &lt;FontAwesomeIcon icon={faCoffee} /> Drinks
+        &lt;/button>
+        &lt;button className={`tab ${selectedTab === 'Sauces' ? 'active' : ''}`} onClick={() => filterItemsByCategory('Sauces')}>
+          &lt;FontAwesomeIcon icon={faPepperHot} /> Sauces
+        &lt;/button>
+      &lt;/div>
+
+      {/* Display filtered menu items */}
+      &lt;div className="menu-items-container">
+        {filteredItems.map((item) => (
+          &lt;div key={item.menu_item_id} className="menu-item">
+            &lt;img src={item.image_url} alt={item.name} />
+            &lt;h3>{item.name}&lt;/h3>
+            &lt;p>{item.description}&lt;/p>
+            &lt;div className="price">${item.price}&lt;/div>
+
+            &lt;div className="quantity-container">
+              &lt;button className="quantity-button" onClick={(e) => {
+                const input = e.target.nextElementSibling;
+                input.value = Math.max(1, (parseInt(input.value) || 1) - 1);
+              }}>
+                -
+              &lt;/button>
+              &lt;input type="number" min="1" defaultValue="1" className="quantity-input" onChange={handleQuantityChange} id={`quantity-${item.menu_item_id}`} />
+              &lt;button className="quantity-button" onClick={(e) => {
+                const input = e.target.previousElementSibling;
+                input.value = Math.max(1, (parseInt(input.value) || 1) + 1);
+              }}>
+                +
+              &lt;/button>
+              &lt;button className="add-to-cart" onClick={() => handleAddToCart(item, parseInt(document.getElementById(`quantity-${item.menu_item_id}`).value))}>
+                Add to Cart
+              &lt;/button>
+            &lt;/div>
+          &lt;/div>
+        ))}
+      &lt;/div>
+
+      {/* Cart button */}
+      &lt;Link to="/cart">
+        &lt;button className="cart-button">🛒&lt;/button>
+      &lt;/Link>
+    &lt;/div>
+  );
+}
+
+export default MenuPage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Reports.html">Reports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CartPage">CartPage</a></li><li><a href="global.html#EmployeeManagementPage">EmployeeManagementPage</a></li><li><a href="global.html#InventoryTable">InventoryTable</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#MenuManagementPage">MenuManagementPage</a></li><li><a href="global.html#MenuPage">MenuPage</a></li><li><a href="global.html#MyBox">MyBox</a></li><li><a href="global.html#TestBox">TestBox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

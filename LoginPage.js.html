@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: LoginPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: LoginPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// import React, { useState } from 'react';
+// import './LoginPage.css';
+// import Header from '../components/Header';
+// import { executeQuery } from './db';
+// import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+// import ManagerPage from './managerPage';
+// import MenuPage from './MenuPage';
+// import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+// import { executeQuery } from './db';
+// import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+// import ManagerPage from './managerPage';
+
+
+
+
+// function LoginPage() {
+//   const navigate = useNavigate();
+//   const [activeLogin, setActiveLogin] = useState('Customer'); // default active login
+//   const [showSignUp, setShowSignUp] = useState(false); // control sign-up form visibility
+//   const [email, setEmail] = useState(''); // state for email input
+//   const [password, setPassword] = useState(''); // state for password input
+//   const [errorMessage, setErrorMessage] = useState(''); // state for error messages
+//     const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const navigate = useNavigate(); // Initialize navigate function
+
+
+//   // handle login logic
+//   const handleLogin = (role) => {
+//     console.log(`Logging in as ${role}`);
+//     switch (role) {
+//       case 'Manager':
+//         loginManager(email, password);
+//         break;
+
+//       case 'Cashier':
+//         loginCashier(email, password);
+//         break;
+
+//       case 'Customer':
+//         loginCustomer(email, password);
+//         break;
+
+//       default:
+//         console.error("Invalid role");
+//         return;
+//     }
+//   };
+
+//   const loginManager = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+//         console.log("Manager Login Successful");
+//         navigate('/managemenu'); // Navigate to ManagerPage
+//       } else {
+//         console.log("Invalid Account details or not a manager");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCashier = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+//         console.log("Cashier Login Successful");
+//         navigate('/menu'); // Navigate to MenuPage
+//       } else {
+//         console.log("Invalid Account details or not a cashier");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCustomer = (email, password) => {
+//     console.log("Customer");
+//     console.log(email);
+//     console.log(password);
+//   };
+
+//   const handleGoogleLogin = async (response) => {
+//     const { credential } = response;
+//     console.log("Google OAuth Token:", credential);
+  
+//     // Send token to backend to verify and handle user login
+//     try {
+//       const res = await fetch('http://localhost:5000/api/verify-google-token', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ token: credential }),
+//       });
+  
+//       const data = await res.json();
+  
+//       // Check the response from your backend
+//       if (data.message === 'User created' || data.message === 'User updated') {
+//         // Navigate to the appropriate page based on role
+//         const userRole = data.user.role; // Assuming your backend returns role
+//         if (userRole === 'manager') {
+//           navigate('/managemenu'); // Navigate to ManagerPage
+//         } else if (userRole === 'cashier') {
+//           navigate('/menu'); // Navigate to MenuPage
+//         } else {
+//           console.log("Customer logged in");
+//           navigate('/customerpage'); // Navigate to CustomerPage (or any default page for customers)
+//         }
+//       } else {
+//         console.log('Google login failed: ', data.message);
+//       }
+//     } catch (error) {
+//       console.log('Error during Google login: ', error);
+//     }
+//   };
+  
+
+//     setErrorMessage(''); // Reset error message on each attempt
+
+//     // make sure to validate that both fields are filled
+//     if (email.trim() === '' || password.trim() === '') 
+//       {
+//       setErrorMessage('Please enter both email and password.');
+//       return;
+//     }
+
+//     // for now, simulate a successful login - UNTIL BACKEND IS IMPLEMENTED
+//     console.log(`Logging in as ${role} with email: ${email}`);
+//     alert(`Logged in as ${role}`);
+//     switch (role) {
+//       case 'Manager':
+//           loginManager(email, password, navigate);
+//           break;
+
+//       case 'Cashier':
+//           loginCashier(email, password, navigate);
+//           break;
+
+//       case 'Customer':
+//           loginCustomer(email, password, navigate);
+//           break;
+
+//       default:
+//           console.error("Invalid role");
+//           return;
+//     }
+
+
+    
+//     // clear inputs
+//     setEmail('');
+//     setPassword('');
+//   };
+
+
+
+
+
+
+
+
+//   // handle customer sign-up logic
+//   const handleSignUp = () => {
+//     if (email.trim() === '' || password.trim() === '') 
+
+//     {
+//       setErrorMessage('Please fill in all fields.');
+//       return;
+//     }
+//     console.log('Creating a new customer account');
+//     alert('Customer account created successfully!');
+
+//     // clear inputs after sign-up
+//     setEmail('');
+//     setPassword('');
+//   };
+
+
+  
+//   return (
+//     &lt;div>
+//       &lt;Header /> {/* Render Header at the top */}
+//       &lt;div className="login-container">
+//         &lt;div className="logo-header">&lt;/div>
+
+//         &lt;div className="login-box">
+//           {/* toggle buttons for login options */}
+//           &lt;div className="login-options">
+//             &lt;button
+//               className={`login-toggle ${activeLogin === 'Manager' ? 'active' : ''}`}
+//               onClick={() => { setActiveLogin('Manager'); setShowSignUp(false); setErrorMessage(''); }}
+//             >
+//               Manager Login
+//             &lt;/button>
+//             &lt;button
+//               className={`login-toggle ${activeLogin === 'Cashier' ? 'active' : ''}`}
+//               onClick={() => { setActiveLogin('Cashier'); setShowSignUp(false); setErrorMessage(''); }}
+//             >
+//               Cashier Login
+//             &lt;/button>
+//             &lt;button
+//               className={`login-toggle ${activeLogin === 'Customer' ? 'active' : ''}`}
+//               onClick={() => { setActiveLogin('Customer'); setShowSignUp(false); setErrorMessage(''); }}
+//             >
+//               Customer Login
+//             &lt;/button>
+//           &lt;/div>
+
+//           {/* manager login form */}
+//           {activeLogin === 'Manager' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Manager Login&lt;/h2>
+//               &lt;input
+//                 type="text"
+//                 placeholder="Email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//               &lt;input
+//                 type="password"
+//                 placeholder="Password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//               />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Manager')}>
+//                 Sign in
+//               &lt;/button>
+//               {errorMessage &amp;&amp; &lt;div className="error-message">{errorMessage}&lt;/div>}
+//             &lt;/div>
+//           )}
+
+//           {/* cashier login form */}
+//           {activeLogin === 'Cashier' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Cashier Login&lt;/h2>
+//               &lt;input
+//                 type="text"
+//                 placeholder="Email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//               &lt;input
+//                 type="password"
+//                 placeholder="Password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//               />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Cashier')}>
+//                 Sign in
+//               &lt;/button>
+//               {errorMessage &amp;&amp; &lt;div className="error-message">{errorMessage}&lt;/div>}
+//             &lt;/div>
+//           )}
+
+//           {/* Customer login/sign-Up form */}
+//           {activeLogin === 'Customer' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>{showSignUp ? 'Customer Sign Up' : 'Customer Login'}&lt;/h2>
+//               &lt;input
+//                 type="text"
+//                 placeholder="Email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//               &lt;input
+//                 type="password"
+//                 placeholder="Password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//               />
+//               {showSignUp &amp;&amp; &lt;input type="text" placeholder="Full Name" />} {/* Additional field for sign-up */}
+//               &lt;button
+//                 className="sign-in-btn"
+//                 onClick={() => showSignUp ? handleSignUp() : handleLogin('Customer')}
+//               >
+//                 {showSignUp ? 'Create Account' : 'Sign in'}
+//               &lt;/button>
+//               {errorMessage &amp;&amp; &lt;div className="error-message">{errorMessage}&lt;/div>}
+//               &lt;button
+//                 className="toggle-signup-btn"
+//                 onClick={() => { setShowSignUp(!showSignUp); setErrorMessage(''); }}
+//                 style={{ marginTop: '15px' }}
+//               >
+//                 {showSignUp ? 'Back to Login' : 'Create Account'}
+//               &lt;/button>
+//             &lt;/div>
+//           )}
+//         &lt;/div>
+//       &lt;/div>
+//     &lt;/div>
+//   );
+// }
+// const loginManager = async (email, password, navigate) => {
+  
+//   const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//   const params = [email, password];
+//   try {
+//     const result = await executeQuery(query, params);
+//     if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+//       console.log("Manager Login Successful");
+//       navigate('/manager'); // Navigate to ManagerPage
+//     } else {
+//       console.log("Invalid Account details or not a manager");
+//     }
+//   } catch (error) {
+//     console.log('Invalid Account details');
+//   }
+// };
+
+// const loginCashier = async (email, password, navigate) => {
+//   const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//   const params = [email, password];
+//   try {
+//     const result = await executeQuery(query, params);
+//     if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+//       console.log("Cashier Login Successful");
+//     } else {
+//       console.log("Invalid Account details or not a cashier");
+//     }
+//   } catch (error) {
+//     console.log('Invalid Account details');
+//   }
+// };
+
+// const loginCustomer = (email, password, navigate) => {
+//   console.log("Customer");
+//   console.log(email);
+//   console.log(password);
+// };
+
+
+// export default LoginPage;
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+// import './LoginPage.css';
+// import Header from '../components/Header';
+// import { executeQuery } from './db';
+// import { useNavigate } from 'react-router-dom';
+// import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+
+// function LoginPage() {
+//   const navigate = useNavigate();
+//   const [activeLogin, setActiveLogin] = useState('Customer'); // Default active login
+//   const [showSignUp, setShowSignUp] = useState(false); // Control sign-up form visibility
+//   const [email, setEmail] = useState(''); // State for email input
+//   const [password, setPassword] = useState(''); // State for password input
+//   const [errorMessage, setErrorMessage] = useState(''); // State for error messages
+
+//   // Handle login logic
+//   const handleLogin = async (role) => {
+//     if (!email.trim() || !password.trim()) {
+//       setErrorMessage('Please enter both email and password.');
+//       return;
+//     }
+
+//     setErrorMessage(''); // Reset error message on each attempt
+//     switch (role) {
+//       case 'Manager':
+//         await loginManager();
+//         break;
+
+//       case 'Cashier':
+//         await loginCashier();
+//         break;
+
+//       case 'Customer':
+//         loginCustomer();
+//         break;
+
+//       default:
+//         console.error('Invalid role');
+//         return;
+//     }
+
+//     // Clear inputs after login
+//     setEmail('');
+//     setPassword('');
+//   };
+
+//   const loginManager = async () => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+//         console.log('Manager Login Successful');
+//         navigate('/managemenu');
+//       } else {
+//         setErrorMessage('Invalid account details or not a manager.');
+//       }
+//     } catch (error) {
+//       setErrorMessage('Error during login. Please try again.');
+//     }
+//   };
+
+//   const loginCashier = async () => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+//         console.log('Cashier Login Successful');
+//         navigate('/menu');
+//       } else {
+//         setErrorMessage('Invalid account details or not a cashier.');
+//       }
+//     } catch (error) {
+//       setErrorMessage('Error during login. Please try again.');
+//     }
+//   };
+
+//   const loginCustomer = () => {
+//     console.log('Customer Login:', email, password);
+//     // Add additional customer login handling here
+//     navigate('/customerpage');
+//   };
+
+//   const handleSignUp = () => {
+//     if (!email.trim() || !password.trim()) {
+//       setErrorMessage('Please fill in all fields.');
+//       return;
+//     }
+
+//     console.log('Creating a new customer account');
+//     alert('Customer account created successfully!');
+
+//     // Clear inputs after sign-up
+//     setEmail('');
+//     setPassword('');
+//   };
+
+//   const handleGoogleLogin = async (response) => {
+//     const { credential } = response;
+//     console.log('Google OAuth Token:', credential);
+
+//     try {
+//       const res = await fetch('http://localhost:5000/api/verify-google-token', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ token: credential }),
+//       });
+
+//       const data = await res.json();
+//       if (data.message === 'User created' || data.message === 'User updated') {
+//         const userRole = data.user.role; // Assuming backend returns the user role
+//         if (userRole === 'manager') {
+//           navigate('/managemenu');
+//         } else if (userRole === 'cashier') {
+//           navigate('/menu');
+//         } else {
+//           navigate('/customerpage');
+//         }
+//       } else {
+//         console.error('Google login failed:', data.message);
+//       }
+//     } catch (error) {
+//       console.error('Error during Google login:', error);
+//     }
+//   };
+
+//   return (
+//     &lt;div>
+//       &lt;Header />
+//       &lt;div className="login-container">
+//         &lt;div className="login-box">
+//           &lt;div className="login-options">
+//             {['Manager', 'Cashier', 'Customer'].map((role) => (
+//               &lt;button
+//                 key={role}
+//                 className={`login-toggle ${activeLogin === role ? 'active' : ''}`}
+//                 onClick={() => { setActiveLogin(role); setShowSignUp(false); setErrorMessage(''); }}
+//               >
+//                 {role} Login
+//               &lt;/button>
+//             ))}
+//           &lt;/div>
+
+//           &lt;div className="login-form">
+//             &lt;h2>{showSignUp &amp;&amp; activeLogin === 'Customer' ? 'Customer Sign Up' : `${activeLogin} Login`}&lt;/h2>
+//             &lt;input
+//               type="text"
+//               placeholder="Email"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//             />
+//             &lt;input
+//               type="password"
+//               placeholder="Password"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//             />
+//             {showSignUp &amp;&amp; activeLogin === 'Customer' &amp;&amp; (
+//               &lt;input type="text" placeholder="Full Name" />
+//             )}
+//             &lt;button
+//               className="sign-in-btn"
+//               onClick={() => (showSignUp &amp;&amp; activeLogin === 'Customer' ? handleSignUp() : handleLogin(activeLogin))}
+//             >
+//               {showSignUp &amp;&amp; activeLogin === 'Customer' ? 'Create Account' : 'Sign in'}
+//             &lt;/button>
+//             {errorMessage &amp;&amp; &lt;div className="error-message">{errorMessage}&lt;/div>}
+//             {activeLogin === 'Customer' &amp;&amp; (
+//               &lt;button
+//                 className="toggle-signup-btn"
+//                 onClick={() => { setShowSignUp(!showSignUp); setErrorMessage(''); }}
+//               >
+//                 {showSignUp ? 'Back to Login' : 'Create Account'}
+//               &lt;/button>
+//             )}
+//           &lt;/div>
+//         &lt;/div>
+//       &lt;/div>
+//     &lt;/div>
+//   );
+// }
+
+// export default LoginPage;
+
+
+// import React, { useState } from 'react';
+// import './LoginPage.css';
+// import Header from '../components/Header';
+// import { executeQuery } from './db';
+// import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+// import ManagerPage from './managerPage';
+// import MenuPage from './MenuPage';
+// import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+
+// function LoginPage() {
+//   const [activeLogin, setActiveLogin] = useState('Customer'); // default active login
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const navigate = useNavigate(); // Initialize navigate function
+
+//   const handleLogin = (role) => {
+//     console.log(`Logging in as ${role}`);
+//     switch (role) {
+//       case 'Manager':
+//         loginManager(email, password);
+//         break;
+
+//       case 'Cashier':
+//         loginCashier(email, password);
+//         break;
+
+//       case 'Customer':
+//         loginCustomer(email, password);
+//         break;
+
+//       default:
+//         console.error("Invalid role");
+//         return;
+//     }
+//   };
+
+//   const loginManager = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+//         console.log("Manager Login Successful");
+//         navigate('/managemenu'); // Navigate to ManagerPage
+//       } else {
+//         console.log("Invalid Account details or not a manager");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCashier = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+//         console.log("Cashier Login Successful");
+//         navigate('/menu'); // Navigate to MenuPage
+//       } else {
+//         console.log("Invalid Account details or not a cashier");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCustomer = (email, password) => {
+//     console.log("Customer");
+//     console.log(email);
+//     console.log(password);
+//   };
+
+//   const handleGoogleLogin = async (response) => {
+//     const { credential } = response;
+//     console.log("Google OAuth Token:", credential);
+  
+//     // Send token to backend to verify and handle user login
+//     try {
+//       const res = await fetch('http://localhost:5000/api/verify-google-token', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ token: credential }),
+//       });
+  
+//       const data = await res.json();
+  
+//       // Check the response from your backend
+//       if (data.message === 'User created' || data.message === 'User updated') {
+//         // Navigate to the appropriate page based on role
+//         const userRole = data.user.role; // Assuming your backend returns role
+//         if (userRole === 'manager') {
+//           navigate('/managemenu'); // Navigate to ManagerPage
+//         } else if (userRole === 'cashier') {
+//           navigate('/menu'); // Navigate to MenuPage
+//         } else {
+//           console.log("Customer logged in");
+//           navigate('/customerpage'); // Navigate to CustomerPage (or any default page for customers)
+//         }
+//       } else {
+//         console.log('Google login failed: ', data.message);
+//       }
+//     } catch (error) {
+//       console.log('Error during Google login: ', error);
+//     }
+//   };
+  
+
+//   return (
+//     &lt;div>
+//       &lt;Header /> {/* Render Header at the top */}
+//       &lt;div className="login-container">
+//         &lt;div className="logo-header">&lt;/div>
+//         &lt;div className="login-box">
+//           &lt;div className="login-options">
+//             &lt;button className={`login-toggle ${activeLogin === 'Manager' ? 'active' : ''}`} onClick={() => setActiveLogin('Manager')}>Manager Login&lt;/button>
+//             &lt;button className={`login-toggle ${activeLogin === 'Cashier' ? 'active' : ''}`} onClick={() => setActiveLogin('Cashier')}>Cashier Login&lt;/button>
+//             &lt;button className={`login-toggle ${activeLogin === 'Customer' ? 'active' : ''}`} onClick={() => setActiveLogin('Customer')}>Customer Login&lt;/button>
+//           &lt;/div>
+
+//           {activeLogin === 'Manager' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Manager Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Manager')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {activeLogin === 'Cashier' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Cashier Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Cashier')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {activeLogin === 'Customer' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Customer Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Customer')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {/* Google OAuth Login */}
+//           &lt;GoogleLogin
+//             onSuccess={handleGoogleLogin}
+//             onError={() => console.log('Google login failed')}
+//           />
+//         &lt;/div>
+//       &lt;/div>
+//     &lt;/div>
+//   );
+// }
+
+// export default LoginPage;
+
+
+// import React, { useState, useContext } from 'react'; // Import useContext
+// import './LoginPage.css';
+// import Header from '../components/Header';
+// import { executeQuery } from './db';
+// import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+// import ManagerPage from './managerPage';
+// import MenuPage from './MenuPage';
+// import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+// import { UserContext } from '../context/UserContext'; // Import context
+
+// function LoginPage() {
+//   const [activeLogin, setActiveLogin] = useState('Customer'); // default active login
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const navigate = useNavigate(); // Initialize navigate function
+//   const { setUser } = useContext(UserContext); // Use context to set user
+
+//   const handleLogin = (role) => {
+//     console.log(`Logging in as ${role}`);
+//     switch (role) {
+//       case 'Manager':
+//         loginManager(email, password);
+//         break;
+
+//       case 'Cashier':
+//         loginCashier(email, password);
+//         break;
+
+//       case 'Customer':
+//         loginCustomer(email, password);
+//         break;
+
+//       default:
+//         console.error("Invalid role");
+//         return;
+//     }
+    
+//   };
+
+//   const loginManager = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+//         console.log("Manager Login Successful");
+//         setUser({ role: result[0].role }); // Fix: Use result[0].role
+//         navigate('/managemenu'); // Navigate to ManagerPage
+//       } else {
+//         console.log("Invalid Account details or not a manager");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCashier = async (email, password) => {
+//     const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+//     const params = [email, password];
+//     try {
+//       const result = await executeQuery(query, params);
+//       if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+//         console.log("Cashier Login Successful");
+//         setUser({ role: result[0].role }); // Fix: Use result[0].role
+//         navigate('/menu'); // Navigate to MenuPage
+//       } else {
+//         console.log("Invalid Account details or not a cashier");
+//       }
+//     } catch (error) {
+//       console.log('Invalid Account details');
+//     }
+//   };
+
+//   const loginCustomer = (email, password) => {
+//     console.log("Customer");
+//     console.log(email);
+//     console.log(password);
+//   };
+
+//   const handleGoogleLogin = async (response) => {
+//     const { credential } = response;
+//     console.log("Google OAuth Token:", credential);
+
+//     // Send token to backend to verify and handle user login
+//     try {
+//       const res = await fetch('http://localhost:5000/api/verify-google-token', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ token: credential }),
+//       });
+
+//       const data = await res.json();
+
+//       // Check the response from your backend
+//       if (data.message === 'User created' || data.message === 'User updated') {
+//         // Navigate to the appropriate page based on role
+//         const userRole = data.user.role; // Assuming your backend returns role
+//         if (userRole === 'manager') {
+//           navigate('/managemenu'); // Navigate to ManagerPage
+//         } else if (userRole === 'cashier') {
+//           navigate('/menu'); // Navigate to MenuPage
+//         } else {
+//           console.log("Customer logged in");
+//           navigate('/customerpage'); // Navigate to CustomerPage (or any default page for customers)
+//         }
+//       } else {
+//         console.log('Google login failed: ', data.message);
+//       }
+//     } catch (error) {
+//       console.log('Error during Google login: ', error);
+//     }
+//   };
+
+//   return (
+//     &lt;div>
+//       &lt;div className="login-container">
+//         &lt;div className="logo-header">&lt;/div>
+//         &lt;div className="login-box">
+//           &lt;div className="login-options">
+//             &lt;button className={`login-toggle ${activeLogin === 'Manager' ? 'active' : ''}`} onClick={() => setActiveLogin('Manager')}>Manager Login&lt;/button>
+//             &lt;button className={`login-toggle ${activeLogin === 'Cashier' ? 'active' : ''}`} onClick={() => setActiveLogin('Cashier')}>Cashier Login&lt;/button>
+//             &lt;button className={`login-toggle ${activeLogin === 'Customer' ? 'active' : ''}`} onClick={() => setActiveLogin('Customer')}>Customer Login&lt;/button>
+//           &lt;/div>
+
+//           {activeLogin === 'Manager' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Manager Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Manager')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {activeLogin === 'Cashier' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Cashier Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Cashier')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {activeLogin === 'Customer' &amp;&amp; (
+//             &lt;div className="login-form">
+//               &lt;h2>Customer Login&lt;/h2>
+//               &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+//               &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+//               &lt;button className="sign-in-btn" onClick={() => handleLogin('Customer')}>Sign in&lt;/button>
+//             &lt;/div>
+//           )}
+
+//           {/* Google OAuth Login */}
+//           &lt;GoogleLogin
+//             onSuccess={handleGoogleLogin}
+//             onError={() => console.log('Google login failed')}
+//           />
+//         &lt;/div>
+//       &lt;/div>
+//     &lt;/div>
+//   );
+// }
+
+// export default LoginPage;
+
+
+//trying to change sing in to sign out
+
+
+import React, { useState, useContext } from 'react';
+import './LoginPage.css';
+import Header from '../components/Header';
+import { executeQuery } from './db';
+import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { UserContext } from '../context/UserContext';
+
+/**
+ * The function for the Login Page.
+ * @returns {JSX.Element} The JSX layout for the Login page.
+ */
+function LoginPage() {
+  const [activeLogin, setActiveLogin] = useState('Cashier'); // Default active login
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showSignUp, setShowSignUp] = useState(false); // Control sign-up form visibility
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+    /**
+   * Handles login based on the user role.
+   * @param {string} role - The role of the user logging in (Manager, Cashier, or Customer).
+   * @returns {void}
+   */
+  const handleLogin = async (role) => {
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('Please enter both email and password.');
+      return;
+    }
+
+    setErrorMessage(''); // Reset error message on each attempt
+    switch (role) {
+      case 'Manager':
+        await loginManager();
+        break;
+      case 'Cashier':
+        await loginCashier();
+        break;
+      case 'Customer':
+        loginCustomer();
+        break;
+      default:
+        console.error('Invalid role');
+    }
+  };
+
+   /**
+   * Logs in as a Manager.
+   * @returns {void}
+   */
+  const loginManager = async () => {
+    const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+    const params = [email, password];
+    try {
+      const result = await executeQuery(query, params);
+      if (result.length === 1 &amp;&amp; result[0].role === 'manager') {
+        setUser({ role: result[0].role });
+        navigate('/managemenu');
+      } else {
+        console.error('Invalid account details or not a manager');
+      }
+    } catch (error) {
+      console.error('Error during Manager login:', error);
+    }
+  };
+
+  /**
+   * Logs in as a Cashier.
+   * @returns {void}
+   */
+  const loginCashier = async () => {
+    const query = 'SELECT role FROM employees WHERE username = $1 AND password = $2;';
+    const params = [email, password];
+    try {
+      const result = await executeQuery(query, params);
+      if (result.length === 1 &amp;&amp; result[0].role === 'cashier') {
+        setUser({ role: result[0].role });
+        navigate('/menu');
+      } else {
+        console.error('Invalid account details or not a cashier');
+      }
+    } catch (error) {
+      console.error('Error during Cashier login:', error);
+    }
+  };
+
+   /**
+   * Logs in as a Customer.
+   * @returns {void}
+   */
+  const loginCustomer = () => {
+    console.log('Customer Login:', email, password);
+    navigate('/customerpage');
+  };
+
+  /**
+   * Handles customer sign-up.
+   * @returns {void}
+   */
+  const handleSignUp = () => {
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('Please fill in all fields.');
+      return;
+    }
+
+    console.log('Creating a new customer account');
+    alert('Customer account created successfully!');
+    setEmail('');
+    setPassword('');
+  };
+
+  /**
+   * Handles Google login using OAuth.
+   * @param {object} response - The Google OAuth response containing a credential.
+   * @returns {void}
+   */
+  const handleGoogleLogin = async (response) => {
+    const { credential } = response;
+    try {
+      const res = await fetch('http://localhost:5000/api/verify-google-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: credential }),
+      });
+
+      const data = await res.json();
+      if (data.message === 'User created' || data.message === 'User updated') {
+        const userRole = data.user.role; // Assuming backend returns role
+        setUser({ role: userRole });
+        navigate(userRole === 'manager' ? '/managemenu' : userRole === 'cashier' ? '/menu' : '/customerpage');
+      } else {
+        console.error('Google login failed:', data.message);
+      }
+    } catch (error) {
+      console.error('Error during Google login:', error);
+    }
+  };
+
+  return (
+    &lt;div>
+      &lt;div className="login-container">
+        &lt;div className="login-box">
+          &lt;div className="login-options">
+            &lt;button className={`login-toggle ${activeLogin === 'Manager' ? 'active' : ''}`} onClick={() => setActiveLogin('Manager')}>Manager Login&lt;/button>
+            &lt;button className={`login-toggle ${activeLogin === 'Cashier' ? 'active' : ''}`} onClick={() => setActiveLogin('Cashier')}>Cashier Login&lt;/button>
+          &lt;/div>
+
+          {['Manager', 'Cashier'].includes(activeLogin) &amp;&amp; (
+            &lt;div className="login-form">
+              &lt;h2>{activeLogin} Login&lt;/h2>
+              &lt;input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              &lt;input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              &lt;button className="sign-in-btn" onClick={() => handleLogin(activeLogin)}>Sign in&lt;/button>
+              {errorMessage &amp;&amp; &lt;p className="error">{errorMessage}&lt;/p>}
+            &lt;/div>
+          )}
+
+          &lt;GoogleLogin onSuccess={handleGoogleLogin} onError={() => console.error('Google login failed')} />
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  );
+}
+
+export default LoginPage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Reports.html">Reports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CartPage">CartPage</a></li><li><a href="global.html#EmployeeManagementPage">EmployeeManagementPage</a></li><li><a href="global.html#InventoryTable">InventoryTable</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#MenuManagementPage">MenuManagementPage</a></li><li><a href="global.html#MenuPage">MenuPage</a></li><li><a href="global.html#MyBox">MyBox</a></li><li><a href="global.html#TestBox">TestBox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

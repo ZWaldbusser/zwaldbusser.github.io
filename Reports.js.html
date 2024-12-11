@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Reports.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Reports.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+ * Reports Component
+ * 
+ * This component provides an interactive dashboard for generating and visualizing
+ * three types of reports for the Point-of-Sale (POS) system: 
+ * 
+ * 1. **Product Usage Report**: Displays the usage of each menu item over a specified date range.
+ * 2. **X-Report**: Summarizes daily transactions, showing hourly order counts.
+ * 3. **Z-Report**: Provides an end-of-day summary, including hourly sales and orders placed.
+ *    Additionally, it includes a reset feature to clear the report's totals.
+ * 
+ * Users can select a report type, specify a date range (and an ingredient ID for the 
+ * Product Usage Report), and view the results as a line chart. The component supports
+ * dynamic data fetching and interactive visualizations using Chart.js.
+ * 
+ * Dependencies:
+ * - `chart.js`
+ * - `react-chartjs-2`
+ ***********************************
+ command to install dependencies : 
+ npm install chart.js react-chartjs-2
+ ***********************************
+ * 
+ * @component
+ * @example
+ * return (
+ *   &lt;Reports />
+ * )
+ * 
+ * @module Reports
+ * @author Zeina Abu Ghosh
+ */
+
+import React, { useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import './Reports.css';
+import Sidebar from '../components/Sidebar';
+import { executeQuery } from './db';
+
+// Registering required components for Chart.js
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+const ReportPage = () => {
+
+  // State variables for selected report, date range, ingredient ID, and chart data
+  const [selectedReport, setSelectedReport] = useState('Product Usage');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [id, setId] = useState('');
+  const [chartData, setChartData] = useState(null);
+  /**
+ * Fetches and processes data for the **Product Usage Report**.
+ * 
+ * This report calculates the total quantity of a specific ingredient used across 
+ * all menu items during the specified date range.
+ * 
+ * @async
+ * @function fetchProductUsageData
+ * @throws {Error} Logs an error if the query execution fails.
+ * 
+ * @returns {void}
+ */
+  const fetchProductUsageData = async () => {
+    if (!startDate || !endDate) {
+      console.error('Start date or end date is missing');
+      alert('Please select both start and end dates');
+      return;
+    }
+
+    const query = `
+      SELECT 
+        DATE(o.order_date) AS date,
+        SUM(mii.quantity::INTEGER * oi.quantity::INTEGER) AS ingredient_quantity_used
+      FROM orders o
+      JOIN order_items oi ON o.order_id = oi.order_id
+      JOIN menu_item_ingredients mii ON oi.menu_item_id = mii.menu_item_id
+      WHERE o.order_date BETWEEN $1 AND $2
+        AND mii.inventory_item_id = $3
+      GROUP BY DATE(o.order_date)
+      ORDER BY DATE(o.order_date) ASC;
+    `;
+    const params = [startDate, endDate, id];
+    
+    try {
+      // Execute the query and transform the results for charting
+      const result = await executeQuery(query, params);
+  
+      const labels = result.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US'); // Format as MM-DD-YYYY
+      });
+      
+      const data = result.map(item => item.ingredient_quantity_used);
+  
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Quantity Used',
+            data,
+            borderColor: 'rgba(54,162,235,1)', // blue line color
+            tension: 0.1, // smooth curve
+          }
+        ]
+      });
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+  };
+/**
+ * Fetches and processes data for the **X-Report**.
+ * 
+ * This report summarizes the total number of orders placed during each hour of 
+ * the specified day (or range). It focuses on current-day activity.
+ * 
+ * @async
+ * @function fetchXReportData
+ * @throws {Error} Logs an error if the query execution fails.
+ * 
+ * @returns {void}
+ */
+
+  const fetchXReportData = async () => {
+    if (!startDate || !endDate) {
+      console.error('Start date or end date is missing');
+      alert('Please select both start and end dates');
+      return;
+    }
+
+    // query from Zach 
+    const query = `
+     
+      SELECT 
+        EXTRACT(HOUR FROM o.order_date) AS hour,
+        COUNT(o.order_id) AS orders_placed
+      FROM orders o
+      WHERE o.order_date::DATE = CURRENT_DATE
+      GROUP BY EXTRACT(HOUR FROM o.order_date)
+      ORDER BY hour;
+    `;
+    const params = [startDate, endDate];
+    
+    try {
+      const result = await executeQuery(query, params);
+  
+      const workingHours = Array.from({ length: 12 }, (_, i) => i + 9); // 9 AM to 8 PM
+  
+      const resultData = result.reduce((acc, item) => {
+        acc[item.hour] = item.orders_placed;
+        return acc;
+      }, {});
+  
+      const labels = workingHours.map(hour => `${hour}:00`);
+      const data = workingHours.map(hour => resultData[hour] || 0);
+
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Orders Placed',
+            data,
+            borderColor: 'rgba(75,192,192,1)', // green line color 
+            tension: 0.1,
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching X-Report data:', error);
+    }
+  };
+  /**
+ * Fetches and processes data for the **Z-Report**.
+ * 
+ * This report combines the total sales amount and the total number of orders 
+ * placed during each hour of the specified day (or range). It also provides 
+ * an option to reset the totals.
+ * 
+ * @async
+ * @function fetchZReportData
+ * @throws {Error} Logs an error if the query execution fails.
+ * 
+ * @returns {void}
+ */
+
+  const fetchZReportData = async () => {
+    if (!startDate || !endDate) {
+      console.error('Start date or end date is missing');
+      alert('Please select both start and end dates');
+      return;
+    }
+
+
+     // query from Zach 
+    const query = `
+      SELECT 
+        EXTRACT(HOUR FROM o.order_date) AS hour,
+        COUNT(o.order_id) AS orders_placed,
+        SUM(o.total_amount) AS total_sales
+      FROM orders o
+      WHERE o.order_date::DATE = CURRENT_DATE
+      GROUP BY EXTRACT(HOUR FROM o.order_date)
+      ORDER BY hour;
+    `;
+    const params = [startDate, endDate];
+    
+    try {
+      const result = await executeQuery(query, params);
+      
+      const hours = Array.from({ length: 24 }, (_, i) => i); // 0 - 23 for each hour of the day
+      const orderCounts = hours.map(hour => result.find(item => item.hour === hour)?.orders_placed || 0);
+      const salesTotals = hours.map(hour => result.find(item => item.hour === hour)?.total_sales || 0);
+
+      setChartData({
+        labels: hours.map(hour => `${hour}:00`),
+        datasets: [
+          {
+            label: 'Orders Placed',
+            data: orderCounts,
+            borderColor: 'rgba(75,192,192,1)', // green color 
+            tension: 0.1,
+          },
+          {
+            label: 'Total Sales',
+            data: salesTotals,
+            borderColor: 'rgba(255,99,132,1)', // red color 
+            tension: 0.1,
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching Z-Report data:', error);
+    }
+  };
+ /**
+ * Resets the **Z-Report** totals by clearing stored data.
+ * 
+ * This operation saves the reset state locally and updates the chart to reflect 
+ * cleared values for all hours of the day.
+ * 
+ * @function resetZReportData
+ * 
+ * @returns {void}
+ */
+  const resetZReportData = () => {
+    localStorage.setItem('zReportReset', 'true'); // Save reset state locally
+    setChartData({
+      labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+      datasets: [
+        { label: 'Orders Placed', data: Array(24).fill(0), borderColor: 'rgba(75,192,192,1)', tension: 0.1 },
+        { label: 'Total Sales', data: Array(24).fill(0), borderColor: 'rgba(255,99,132,1)', tension: 0.1 }
+      ]
+    });
+  };
+
+  return (
+    &lt;div>
+      &lt;div className="reports-management">
+        &lt;Sidebar />
+        &lt;div className="reports-container">
+          &lt;h2>Reports Dashboard&lt;/h2>
+          &lt;div className="report-buttons">
+            &lt;button onClick={() => { setSelectedReport('Product Usage'); }}>Product Usage Report&lt;/button>
+            &lt;button onClick={() => { setSelectedReport('X-Report'); }}>X-Report&lt;/button>
+            &lt;button onClick={() => { setSelectedReport('Z-Report'); }}>Z-Report&lt;/button>
+          &lt;/div>
+  
+          {/* Date input section */}
+          {(selectedReport === 'Product Usage' || selectedReport === 'X-Report' || selectedReport === 'Z-Report') &amp;&amp; (
+            &lt;div className="date-inputs">
+              &lt;label>
+                Start Date:
+                &lt;input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    console.log('Start Date Updated:', e.target.value);
+                  }}
+                />
+              &lt;/label>
+              &lt;label>
+                End Date:
+                &lt;input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    console.log('End Date Updated:', e.target.value);
+                  }}
+                />
+              &lt;/label>
+  
+              {/* Conditional inputs based on selected report */}
+              {selectedReport === 'Product Usage' &amp;&amp; (
+                &lt;>
+                  &lt;label>
+                    Ingredient ID:
+                    &lt;input
+                      type="number"
+                      value={id}
+                      onChange={(e) => setId(e.target.value)}
+                    />
+                  &lt;/label>
+                  &lt;button
+                    onClick={fetchProductUsageData}
+                    className="submit-button"
+                  >
+                    Submit
+                  &lt;/button>
+                &lt;/>
+              )}
+  
+              {selectedReport === 'X-Report' &amp;&amp; (
+                &lt;button
+                  onClick={fetchXReportData}
+                  className="submit-button"
+                >
+                  Submit X-Report
+                &lt;/button>
+              )}
+  
+              {selectedReport === 'Z-Report' &amp;&amp; (
+                &lt;button
+                  onClick={fetchZReportData}
+                  className="submit-button"
+                >
+                  Submit Z-Report
+                &lt;/button>
+              )}
+  
+              &lt;button
+                onClick={() => {
+                  setSelectedReport(null);
+                  setStartDate('');
+                  setEndDate('');
+                  setId('');
+                  setChartData(null);
+                }}
+                className="reset-button"
+              >
+                Reset
+              &lt;/button>
+            &lt;/div>
+          )}
+  
+          {/* Z-Report reset button */}
+          {selectedReport === 'Z-Report' &amp;&amp; (
+            &lt;div className="z-report-options">
+              &lt;button
+                onClick={resetZReportData}
+                className="z-report-button"
+              >
+                Z-Report Reset
+              &lt;/button>
+            &lt;/div>
+          )}
+  
+          {/* Chart display */}
+          {chartData ? (
+            &lt;div className="report-content">
+              &lt;h3>{selectedReport}&lt;/h3>
+              &lt;Line data={chartData} />
+            &lt;/div>
+          ) : (
+            &lt;div>Select a report to view&lt;/div>
+          )}
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  );
+};  
+
+export default ReportPage;
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Reports.html">Reports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CartPage">CartPage</a></li><li><a href="global.html#EmployeeManagementPage">EmployeeManagementPage</a></li><li><a href="global.html#InventoryTable">InventoryTable</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#MenuManagementPage">MenuManagementPage</a></li><li><a href="global.html#MenuPage">MenuPage</a></li><li><a href="global.html#MyBox">MyBox</a></li><li><a href="global.html#TestBox">TestBox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

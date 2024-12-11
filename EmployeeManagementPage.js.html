@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: EmployeeManagementPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: EmployeeManagementPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Sidebar from '../components/Sidebar';
+import './EmployeeManagementPage.css';
+
+
+ /**
+ * The function for the Employee Management Page.
+ * @returns {HTML} The HTML data of the employee management page.
+ */
+function EmployeeManagementPage() {
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [newEmployee, setNewEmployee] = useState({
+    fname: '',
+    lname: '',
+    username: '',
+    password: '',
+    role: ''
+  });
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+   /**
+   * Posts the request to fetch employees.
+   * @returns {n/a} Sets the employees within the page.
+   */ 
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/employees');
+      setEmployees(response.data);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  };
+
+   /**
+   * Retrieves the employee data and displays it.
+   * @param {Employee} employee The employee to be retreived.
+   * @returns {n/a} Calls another function.
+   */
+  const handleRowClick = (employee) => {
+    setSelectedEmployee(employee);
+  };
+
+  /**
+   * Changes data based on the input.
+   * @param {Employee} e The employee to be retreived.
+   * @returns {n/a} Calls another function.
+   */
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedEmployee({ ...selectedEmployee, [name]: value });
+  };
+
+  /**
+   * Updates the employee.
+   * @returns {n/a} Calls other functions.
+   */
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/employees/${selectedEmployee.id}`, selectedEmployee);
+      fetchEmployees();
+      setSelectedEmployee(null);
+    } catch (error) {
+      console.error('Error updating employee:', error);
+    }
+  };
+
+  /**
+   * Handles the new employee change.
+   * @param {Employee} employee The employee in question.
+   * @returns {n/a} Calls another function.
+   */
+  const handleNewEmployeeChange = (e) => {
+    const { name, value } = e.target;
+    setNewEmployee({ ...newEmployee, [name]: value });
+  };
+
+
+  /**
+   * Adds a new employee.
+   * @returns {n/a} Calls another function. Sets new data.
+   */
+  const handleAddEmployee = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/employees', newEmployee);
+      fetchEmployees();
+      setNewEmployee({ fname: '', lname: '', username: '', password: '', role: '' });
+    } catch (error) {
+      console.error('Error adding employee:', error);
+    }
+  };
+
+  /**
+   * Handles the deletion of an employee.
+   * @param {number} id The employee's id.
+   * @returns {n/a} Calls another function.
+   */
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/employees/${id}`);
+      fetchEmployees();
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+    }
+  };
+
+  return (
+    &lt;div>
+      &lt;div className="employee-management">
+        &lt;Sidebar />
+
+        &lt;div className="content">
+          &lt;h1>Employee Management&lt;/h1>
+
+          &lt;div className="form-section">
+            &lt;h2>Add New Employee&lt;/h2>
+            &lt;form onSubmit={(e) => e.preventDefault()}>
+              &lt;label>First Name:
+                &lt;input type="text" name="fname" value={newEmployee.fname} onChange={handleNewEmployeeChange} />
+              &lt;/label>
+              &lt;label>Last Name:
+                &lt;input type="text" name="lname" value={newEmployee.lname} onChange={handleNewEmployeeChange} />
+              &lt;/label>
+              &lt;label>Username:
+                &lt;input type="text" name="username" value={newEmployee.username} onChange={handleNewEmployeeChange} />
+              &lt;/label>
+              &lt;label>Password:
+                &lt;input type="password" name="password" value={newEmployee.password} onChange={handleNewEmployeeChange} />
+              &lt;/label>
+              &lt;label>Role:
+                &lt;input type="text" name="role" value={newEmployee.role} onChange={handleNewEmployeeChange} />
+              &lt;/label>
+              &lt;button onClick={handleAddEmployee}>Add Employee&lt;/button>
+            &lt;/form>
+          &lt;/div>
+
+          &lt;div className="table-section">
+            &lt;table>
+              &lt;thead>
+                &lt;tr>
+                  &lt;th>First Name&lt;/th>
+                  &lt;th>Last Name&lt;/th>
+                  &lt;th>Username&lt;/th>
+                  &lt;th>Role&lt;/th>
+                  &lt;th>Actions&lt;/th>
+                &lt;/tr>
+              &lt;/thead>
+              &lt;tbody>
+                {employees.map((employee) => (
+                  &lt;tr key={employee.id} onClick={() => handleRowClick(employee)}>
+                    &lt;td>{employee.fname}&lt;/td>
+                    &lt;td>{employee.lname}&lt;/td>
+                    &lt;td>{employee.username}&lt;/td>
+                    &lt;td>{employee.role}&lt;/td>
+                    &lt;td>&lt;button onClick={() => handleDelete(employee.id)}>Delete&lt;/button>&lt;/td>
+                  &lt;/tr>
+                ))}
+              &lt;/tbody>
+            &lt;/table>
+          &lt;/div>
+
+          {selectedEmployee &amp;&amp; (
+            &lt;div className="edit-section">
+              &lt;h2>Edit Employee&lt;/h2>
+              &lt;form onSubmit={(e) => e.preventDefault()}>
+                &lt;label>First Name:
+                  &lt;input type="text" name="fname" value={selectedEmployee.fname} onChange={handleInputChange} />
+                &lt;/label>
+                &lt;label>Last Name:
+                  &lt;input type="text" name="lname" value={selectedEmployee.lname} onChange={handleInputChange} />
+                &lt;/label>
+                &lt;label>Username:
+                  &lt;input type="text" name="username" value={selectedEmployee.username} onChange={handleInputChange} />
+                &lt;/label>
+                &lt;label>Role:
+                  &lt;input type="text" name="role" value={selectedEmployee.role} onChange={handleInputChange} />
+                &lt;/label>
+                &lt;button onClick={handleUpdate}>Save Changes&lt;/button>
+              &lt;/form>
+            &lt;/div>
+          )}
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  );
+}
+
+export default EmployeeManagementPage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Reports.html">Reports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CartPage">CartPage</a></li><li><a href="global.html#EmployeeManagementPage">EmployeeManagementPage</a></li><li><a href="global.html#InventoryTable">InventoryTable</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#MenuManagementPage">MenuManagementPage</a></li><li><a href="global.html#MenuPage">MenuPage</a></li><li><a href="global.html#MyBox">MyBox</a></li><li><a href="global.html#TestBox">TestBox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

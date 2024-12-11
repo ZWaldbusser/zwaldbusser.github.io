@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: InventoryManagementPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: InventoryManagementPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Sidebar from '../components/Sidebar';
+import './InventoryManagementPage.css';
+
+
+/**
+   * The overall function for the inverntory table page.
+   * @returns {HTML} The HTML data of the page.
+   */
+function InventoryTable() {
+  const [inventory, setInventory] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [newItem, setNewItem] = useState({ item_name: '', item_type: '', cost: '', quantity: '', reorder_level: '' });
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  /**
+   * Retrieves the inventory data and displays it.
+   * @returns {n/a} Calls another function.
+   */
+  const fetchInventory = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/inventory');
+      setInventory(response.data);
+    } catch (error) {
+      console.error('Error fetching inventory:', error);
+    }
+  };
+
+  /**
+   * Changes the displayed item.
+   * @param {item} item The employee to be displayed.
+   * @returns {n/a} Calls another function.
+   */
+  const handleRowClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  /**
+   * Changes data based on the input.
+   * @param {item} e The item to be retreived.
+   * @returns {n/a} Calls another function.
+   */
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedItem({ ...selectedItem, [name]: value });
+  };
+
+  /**
+   * Updates the inventory.
+   * @returns {n/a} Calls other functions.
+   */
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/inventory/${selectedItem.inventory_item_id}`, selectedItem);
+      fetchInventory();
+      setSelectedItem(null);
+    } catch (error) {
+      console.error('Error updating item:', error);
+    }
+  };
+
+  /**
+   * Handles the new item change.
+   * @param {item} e The item in question.
+   * @returns {n/a} Calls another function.
+   */
+  const handleNewItemChange = (e) => {
+    const { name, value } = e.target;
+    setNewItem({ ...newItem, [name]: value });
+  };
+
+  /**
+   * Adds a new item.
+   * @returns {n/a} Calls another function. Sets new data.
+   */
+  const handleAddItem = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/inventory', newItem);
+      fetchInventory();
+      setNewItem({ item_name: '', item_type: '', cost: '', quantity: '', reorder_level: '' });
+    } catch (error) {
+      console.error('Error adding item:', error);
+    }
+  };
+
+  /**
+   * Handles the deletion of an item.
+   * @param {number} id The item id.
+   * @returns {n/a} Calls another function.
+   */
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/inventory/${id}`);
+      fetchInventory();
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
+  return (
+    &lt;div>
+    &lt;div className="inventory-management">
+      &lt;Sidebar />
+
+      &lt;div className="content">
+        &lt;h1>Inventory Management&lt;/h1>
+
+        &lt;div className="form-section">
+          &lt;h2>Add New Item&lt;/h2>
+          &lt;form onSubmit={(e) => e.preventDefault()}>
+            &lt;label>Item Name:
+              &lt;input type="text" name="item_name" value={newItem.item_name} onChange={handleNewItemChange} />
+            &lt;/label>
+            &lt;label>Type:
+              &lt;input type="text" name="item_type" value={newItem.item_type} onChange={handleNewItemChange} />
+            &lt;/label>
+            &lt;label>Cost:
+              &lt;input type="number" name="cost" value={newItem.cost} onChange={handleNewItemChange} />
+            &lt;/label>
+            &lt;label>Quantity:
+              &lt;input type="number" name="quantity" value={newItem.quantity} onChange={handleNewItemChange} />
+            &lt;/label>
+            &lt;label>Reorder Level:
+              &lt;input type="number" name="reorder_level" value={newItem.reorder_level} onChange={handleNewItemChange} />
+            &lt;/label>
+            &lt;button onClick={handleAddItem}>Add Item&lt;/button>
+          &lt;/form>
+        &lt;/div>
+
+        &lt;div className="table-section">
+          &lt;table>
+            &lt;thead>
+              &lt;tr>
+                &lt;th>Item Name&lt;/th>
+                &lt;th>Type&lt;/th>
+                &lt;th>Cost&lt;/th>
+                &lt;th>Quantity&lt;/th>
+                &lt;th>Reorder Level&lt;/th>
+                &lt;th>Actions&lt;/th>
+              &lt;/tr>
+            &lt;/thead>
+            &lt;tbody>
+              {inventory.map((item) => (
+                &lt;tr key={item.inventory_item_id} onClick={() => handleRowClick(item)}>
+                  &lt;td>{item.item_name}&lt;/td>
+                  &lt;td>{item.item_type}&lt;/td>
+                  &lt;td>{item.cost}&lt;/td>
+                  &lt;td>{item.quantity}&lt;/td>
+                  &lt;td>{item.reorder_level}&lt;/td>
+                  &lt;td>&lt;button onClick={() => handleDelete(item.inventory_item_id)}>Delete&lt;/button>&lt;/td>
+                &lt;/tr>
+              ))}
+            &lt;/tbody>
+          &lt;/table>
+        &lt;/div>
+
+        {selectedItem &amp;&amp; (
+          &lt;div className="edit-section">
+            &lt;h2>Edit Item&lt;/h2>
+            &lt;form onSubmit={(e) => e.preventDefault()}>
+              &lt;label>Item Name:
+                &lt;input type="text" name="item_name" value={selectedItem.item_name} onChange={handleInputChange} />
+              &lt;/label>
+              &lt;label>Type:
+                &lt;input type="text" name="item_type" value={selectedItem.item_type} onChange={handleInputChange} />
+              &lt;/label>
+              &lt;label>Cost:
+                &lt;input type="number" name="cost" value={selectedItem.cost} onChange={handleInputChange} />
+              &lt;/label>
+              &lt;label>Quantity:
+                &lt;input type="number" name="quantity" value={selectedItem.quantity} onChange={handleInputChange} />
+              &lt;/label>
+              &lt;label>Reorder Level:
+                &lt;input type="number" name="reorder_level" value={selectedItem.reorder_level} onChange={handleInputChange} />
+              &lt;/label>
+              &lt;button onClick={handleUpdate}>Save Changes&lt;/button>
+            &lt;/form>
+          &lt;/div>
+        )}
+      &lt;/div>
+    &lt;/div>
+    &lt;/div>
+  );
+}
+
+export default InventoryTable;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Reports.html">Reports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CartPage">CartPage</a></li><li><a href="global.html#EmployeeManagementPage">EmployeeManagementPage</a></li><li><a href="global.html#InventoryTable">InventoryTable</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#MenuManagementPage">MenuManagementPage</a></li><li><a href="global.html#MenuPage">MenuPage</a></li><li><a href="global.html#MyBox">MyBox</a></li><li><a href="global.html#TestBox">TestBox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
